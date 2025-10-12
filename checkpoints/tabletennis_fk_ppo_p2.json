@@ -1,0 +1,78 @@
+{
+    "agent": "PPO",
+    "agent_kwargs": {
+        "learning_rate": "linear_schedule(0.0001)",
+        "n_steps": 200,
+        "batch_size": 12800,
+        "policy_kwargs": {
+            "net_arch": [
+                1024,
+                1024,
+                512,
+                512,
+                256,
+                256
+            ],
+            "activation_fn": "nn.SiLU"
+        }
+    },
+    "env_header": "import os; import sys; from myosuite.utils import gym",
+    "env_name": "myoChallengeTableTennisP2-v0",
+    "env_nums": 64,
+    "single_env_kwargs": {
+        "obs_keys": [
+            "time",
+            "pelvis_pos",
+            "body_qpos",
+            "body_qvel",
+            "paddle_pos",
+            "paddle_vel",
+            "paddle_ori",
+            "touching_info",
+            "act"
+        ]
+    },
+    "wrapper_list": {
+        "PingPongWrapperP2": {
+            "kp_scale": 500,
+            "rwd_keys_and_weights": {
+                "rel_pos_err": 1,
+                "rel_quat_err": 1,
+                "fin_open": 1,
+                "v_paddle_err": 100,
+                "fall_dist": 100,
+                "reach_hit_dist": 5,
+                "paddle_face_dir_err": 5
+            }
+        }
+    },
+    "vec_normalize": {
+        "is_norm": true,
+        "kwargs": {
+            "norm_obs": true,
+            "norm_reward": false,
+            "clip_obs": 10.0
+        }
+    },
+    "total_timesteps": 1e8,
+    "play": false,
+    "load_model_dir": "checkpoints/best",
+    "check_freq": 5e6,
+    "record_freq": 5e6,
+    "dump_freq": 5e6,
+    "reward_freq": 0,
+    "log_root_dir": "./logs/tabletennis_p2/",
+    "seed": 0,
+    "info_keywords": [
+        "rel_pos_err",
+        "rel_quat_err",
+        "fin_open",
+        "act_reg",
+        "v_paddle_err",
+        "fall_dist",
+        "fall_opponent",
+        "reach_hit_dist",
+        "paddle_face_dir_err",
+        "hit_step"
+    ]
+}
