@@ -82,8 +82,9 @@ def get_custom_observation(rc, obs_keys):
 
 
 def main():
-    # Model and agent
-    args = json.load(open("checkpoints/tabbletennis_fk_ppo_p2.json"))
+    # TODO: 进行修改 Model and agent
+
+    args = json.load(open("checkpoints/tabletennis_fk_ppo_p2.json"))
     args = argparse.Namespace(**args)
 
     Agent = load_agent(args=args)
@@ -104,7 +105,7 @@ def main():
     else:
         rc = RemoteConnection("localhost:8085")
     env = PingPongWrapper(
-        rc, obs_keys=args.single_env_kwargs["obs_keys"], kp_scale=args.wrapper_list["PingPongWrapper"]["kp_scale"]
+        rc, obs_keys=args.single_env_kwargs["obs_keys"], kp_scale=args.wrapper_list["PingPongWrapperP2"]["kp_scale"]
     )
     vec_norm = VecNormalize.load(os.path.join(args.load_model_dir, "env.zip"), DummyVecEnv([lambda: env]))
 
@@ -127,20 +128,24 @@ def main():
             viewer.sync()
             time.sleep(0.05)
 
-        print(f"Trial: {trial}, flat_completed: {flat_completed}")
+        # print(f"Trial: {trial}, flat_completed: {flat_completed}")
         counter = 0
+        rewards = 0
         while not flag_trial:
 
             obs = vec_norm.normalize_obs(obs[None, :])
             action, _states = model.predict(obs, deterministic=True)
 
-            obs, flag_trial, flat_completed = env.step(action[0])
+            obs, reward, flag_trial, flat_completed = env.step(action[0])
+            rewards += reward
 
             if view and viewer.is_running():
                 viewer.sync()
                 time.sleep(0.05)
 
             counter += 1
+        
+        print(f"Trail: {trial}, rewards: {rewards}")
         trial += 1
 
     if view and viewer.is_running():

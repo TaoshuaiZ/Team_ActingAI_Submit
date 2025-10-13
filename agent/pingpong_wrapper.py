@@ -53,7 +53,7 @@ class PingPongWrapper(gym.Wrapper):
         n_actions = len(self.action_joints)
 
         self.observation_space = gym.spaces.Box(
-            low=-np.inf, high=np.inf, shape=(self.env.observation_space.shape[0] + 4,)
+            low=-np.inf, high=np.inf, shape=(self.env.observation_space.shape[0] + 11,)
         )
         self.action_space = gym.spaces.Box(low=-1, high=1, shape=(n_actions,))
         self.action_low = self.model.jnt_range[:, 0][self.action_joints]
@@ -131,7 +131,8 @@ class PingPongWrapper(gym.Wrapper):
         obs, info = self.rc.reset()
         self.paddle_face_dir_local = np.array([0, 0, -1])
 
-        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(self.data.qpos[-7:-4].copy(), self.data.qvel[-6:-3].copy())
+        # TODO： 进行修改command从obs中进行计算
+        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(self.obs_dict["ball_pos"].copy(), self.obs_dict["ball_vel"].copy())
         self.hit_pos_paddle = p_paddle
         self.v_paddle = v_paddle
         self.o_paddle = o_paddle
@@ -190,12 +191,13 @@ class PingPongWrapper(gym.Wrapper):
         _obs, _, _terminated, _truncated, _info = super().step(env_actions)
         ret = self.rc.act_on_environment(env_actions)
         obs = ret["feedback"][0]
+        reward = ret["feedback"][1]
         flag_trial = ret["feedback"][2]
         flat_completed = ret["eval_completed"]
 
         obs = np.concatenate([obs, self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
 
-        return obs, flag_trial, flat_completed
+        return obs, reward, flag_trial, flat_completed
 
 
 def close(a, b):

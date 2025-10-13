@@ -7,6 +7,7 @@ matplotlib
 tabulate
 torch
 stable_baselines3
+sb3_contrib
 
 # Add your own dependencies here
 # awesome_dependency==0.99
