@@ -8,6 +8,7 @@ tabulate
 torch
 stable_baselines3
 sb3_contrib
+mujoco
 
 # Add your own dependencies here
 # awesome_dependency==0.99
