@@ -1,9 +1,11 @@
 import time
-import gymnasium as gym
+from myosuite.utils import gym
 import numpy as np
 import mujoco
 from scipy.spatial.transform import Rotation as R
 from planner import *
+
+from myosuite.envs.myo.myochallenge.tabletennis_v0 import PingpongContactLabels, geom_id_to_label
 
 class PingPongWrapper(gym.Wrapper):
     def __init__(self, rc, obs_keys, kp_scale=1):

@@ -1,10 +1,11 @@
-FROM python:3.10-slim-buster
+FROM python:3.10-slim-bookworm
 
 ENV PYTHONUNBUFFERED 1
 ADD ./agent /
 ADD ./utils /
 ADD ./checkpoints /checkpoints
 ADD requirements/agent_random.txt /
+RUN apt-get update && apt-get install -y git
 RUN pip install --upgrade pip
 RUN pip install -r agent_random.txt
 

@@ -8,7 +8,8 @@ python environment/test_tabletennis_environment.py &
 
 # TO BE REPLACED WITH A DOCKER --> docker run myochallengeeval_mani_agent
 
-python agent/runner.py
+docker run myochallengeeval_tabletennis_agent_p2_test:latest
+# python agent/runner.py
 
 if [ $? -eq 0 ]; then
     printf "${GreenBK}Manipulation Agent script correctly connecting with the environment!${RC} \n"

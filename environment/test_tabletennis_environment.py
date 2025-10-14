@@ -19,7 +19,7 @@ EVALUATION_COMPLETED = False
 import myosuite
 
 class evaluator_environment:
-    def __init__(self, environment="myoChallengeTableTennisP1-v0"):
+    def __init__(self, environment="myoChallengeTableTennisP2-v0"):
         self.score = 0
         self.feedback = None
         self.environment = environment
