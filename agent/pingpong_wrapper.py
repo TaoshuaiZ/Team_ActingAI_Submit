@@ -9,7 +9,7 @@ from myosuite.envs.myo.myochallenge.tabletennis_v0 import PingpongContactLabels,
 
 class PingPongWrapper(gym.Wrapper):
     def __init__(self, rc, obs_keys, kp_scale=1):
-        env = gym.make("myoChallengeTableTennisP2-v0", obs_keys=obs_keys)
+        env = gym.make("myoChallengeTableTennisP2-v0", obs_keys=obs_keys, seed=0)
         super().__init__(env)
         self.rc = rc
         self.obs_keys = obs_keys
@@ -133,7 +133,8 @@ class PingPongWrapper(gym.Wrapper):
         self.paddle_face_dir_local = np.array([0, 0, -1])
 
         # TODO： 进行修改command从obs中进行计算
-        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(self.obs_dict["ball_pos"].copy(), self.obs_dict["ball_vel"].copy())
+        self.get_obs_dict()
+        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(self.rc_obs_dict["ball_pos"].copy(), self.rc_obs_dict["ball_vel"].copy())
         self.hit_pos_paddle = p_paddle
         self.v_paddle = v_paddle
         self.o_paddle = o_paddle
@@ -142,6 +143,9 @@ class PingPongWrapper(gym.Wrapper):
         obs = np.concatenate([obs, p_paddle, v_paddle, o_paddle, np.array([self.hit_time])])
 
         return obs, info
+
+    def get_obs_dict(self):
+        self.rc_obs_dict = self.rc.get_obsdict()
 
     def get_high_command(self, cur_pos, cur_vel):
         """
@@ -189,6 +193,7 @@ class PingPongWrapper(gym.Wrapper):
             input_actions = activations
 
         env_actions = np.concatenate([input_actions, action[:2]])
+        # print(env_actions - np.load("/home/zwt/Projects/myo/muscle_act.npy"))
         _obs, _, _terminated, _truncated, _info = super().step(env_actions)
         ret = self.rc.act_on_environment(env_actions)
         obs = ret["feedback"][0]
@@ -197,7 +202,8 @@ class PingPongWrapper(gym.Wrapper):
         flat_completed = ret["eval_completed"]
 
         obs = np.concatenate([obs, self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
-
+        
+        self.get_obs_dict()
         return obs, reward, flag_trial, flat_completed
 
 

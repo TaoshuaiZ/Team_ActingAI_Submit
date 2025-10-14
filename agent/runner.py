@@ -132,7 +132,7 @@ def main():
         counter = 0
         rewards = 0
         while not flag_trial:
-
+            # env.rc_obs_dict["ball_pos"]
             obs = vec_norm.normalize_obs(obs[None, :])
             action, _states = model.predict(obs, deterministic=True)
 

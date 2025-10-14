@@ -23,14 +23,16 @@ class evaluator_environment:
         self.score = 0
         self.feedback = None
         self.environment = environment
-        self.env = gym.make(environment)
+        print("创建环境")
+        self.env = gym.make(environment, seed=0)
+        print("创建结束")
 
     def get_output_keys(self):
         print(self.env.obs_keys)
         return self.env.obs_keys
 
     def set_output_keys(self, key_set):
-        self.env = gym.make(self.environment, obs_keys=key_set)
+        self.env = gym.make(self.environment, obs_keys=key_set, seed=0)
 
     def reset(self):
         return self.env.reset()
