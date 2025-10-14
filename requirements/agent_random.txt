@@ -10,7 +10,7 @@ stable_baselines3
 sb3_contrib
 mujoco
 scipy
-myosuite
+# myosuite
 
 # Add your own dependencies here
 # awesome_dependency==0.99

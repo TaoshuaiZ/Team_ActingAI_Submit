@@ -3,7 +3,6 @@ import gymnasium as gym
 import numpy as np
 import mujoco
 from scipy.spatial.transform import Rotation as R
-from myosuite.envs.myo.myochallenge.tabletennis_v0 import PingpongContactLabels, geom_id_to_label
 from planner import *
 
 class PingPongWrapper(gym.Wrapper):

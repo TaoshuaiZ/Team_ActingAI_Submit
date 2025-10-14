@@ -7,4 +7,5 @@ ADD ./checkpoints /checkpoints
 ADD requirements/agent_random.txt /
 RUN pip install --upgrade pip
 RUN pip install -r agent_random.txt
+
 CMD [ "python", "runner.py" ]
