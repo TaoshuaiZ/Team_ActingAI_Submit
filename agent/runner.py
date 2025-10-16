@@ -131,12 +131,15 @@ def main():
         # print(f"Trial: {trial}, flat_completed: {flat_completed}")
         counter = 0
         rewards = 0
+        contact_paddle = False 
         while not flag_trial:
             # env.rc_obs_dict["ball_pos"]
             obs = vec_norm.normalize_obs(obs[None, :])
             action, _states = model.predict(obs, deterministic=True)
 
             if env.rc_obs_dict['touching_info'][0] == 1:
+                contact_paddle = True
+            if env.rc_obs_dict['touching_info'][0] == 0 and contact_paddle == True:
                 action = env.action_space.sample()
                 action[:-2] = -1
                 action = action[None, :]
