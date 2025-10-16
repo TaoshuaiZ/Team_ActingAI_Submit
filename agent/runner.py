@@ -136,6 +136,11 @@ def main():
             obs = vec_norm.normalize_obs(obs[None, :])
             action, _states = model.predict(obs, deterministic=True)
 
+            if env.rc_obs_dict['touching_info'][0] == 1:
+                action = env.action_space.sample()
+                action[:-2] = -1
+                action = action[None, :]
+            
             obs, reward, flag_trial, flat_completed = env.step(action[0])
             rewards += reward
 
