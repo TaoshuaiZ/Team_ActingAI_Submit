@@ -26,6 +26,7 @@ class PingPongWrapper(gym.Wrapper):
         self.hit_pos = None
         self.hit_with_paddle = 0
         self.hit_with_paddle_count = 2
+        self.contact_paddle = False
         self.opponent_center = np.array([-0.685, 0.04, 0.795])
 
         self.fk_data = mujoco.MjData(self.model.ptr)
@@ -141,6 +142,7 @@ class PingPongWrapper(gym.Wrapper):
         self.hit_time = t_hit
 
         obs = np.concatenate([obs, p_paddle, v_paddle, o_paddle, np.array([self.hit_time])])
+        self.contact_paddle = False
 
         return obs, info
 
@@ -192,6 +194,11 @@ class PingPongWrapper(gym.Wrapper):
         else:
             input_actions = activations
 
+        if self.rc_obs_dict['touching_info'][0] == 1:
+            self.contact_paddle = True
+        if self.rc_obs_dict['touching_info'][0] == 0 and self.contact_paddle == True:
+            input_actions = np.ones_like(input_actions) * -1
+            
         env_actions = np.concatenate([input_actions, action[:2]])
         # print(env_actions - np.load("/home/zwt/Projects/myo/muscle_act.npy"))
         _obs, _, _terminated, _truncated, _info = super().step(env_actions)
