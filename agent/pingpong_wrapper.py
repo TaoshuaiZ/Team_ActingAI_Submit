@@ -215,7 +215,7 @@ class PingPongWrapper(gym.Wrapper):
         obs = ret["feedback"][0]
         reward = ret["feedback"][1]
         flag_trial = ret["feedback"][2]
-        info = ret["feedback"][3]
+        info = ret["feedback"][4] # TODO：在线测试环境中info索引到底是几？
         flat_completed = ret["eval_completed"]
 
         self.info = info
