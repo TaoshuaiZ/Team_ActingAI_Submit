@@ -7,6 +7,7 @@ ADD ./checkpoints /checkpoints
 ADD requirements/agent_random.txt /
 RUN apt-get update && apt-get install -y git
 RUN pip install --upgrade pip
+RUN pip install torch==2.5.1 torchvision==0.20.1 torchaudio==2.5.1 --index-url https://download.pytorch.org/whl/cpu
 RUN pip install -r agent_random.txt
 
 CMD [ "python", "runner.py" ]

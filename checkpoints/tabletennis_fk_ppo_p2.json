@@ -29,7 +29,9 @@
             "paddle_vel",
             "paddle_ori",
             "touching_info",
-            "act"
+            "act",
+            "ball_pos",
+            "ball_vel"
         ]
     },
     "wrapper_list": {

@@ -92,12 +92,18 @@ class Environment(evaluation_pb2_grpc.EnvironmentServicer):
             action = unpack_for_grpc(request.SerializedEntity)
             env.next_score()
             env.feedback = env.env.step(action)
+            
+        feedback = [env.feedback[0],env.feedback[1],False,env.feedback[4]]
+        # if self.iter == 10:
+        #     feedback = [env.feedback[0],env.feedback[1],True]
+        #     if self.repetition == 5:
+        #         EVALUATION_COMPLETED = True
 
-        feedback = [env.feedback[0],env.feedback[1],False]
-        if self.iter == 10:
-            feedback = [env.feedback[0],env.feedback[1],True]
-            if self.repetition == 5:
+        if env.feedback[2] or env.feedback[3]:
+            feedback = [env.feedback[0],env.feedback[1],True,env.feedback[4]]
+            if self.repetition == 100:
                 EVALUATION_COMPLETED = True
+
         self.iter += 1
         return evaluation_pb2.Package(
             SerializedEntity=pack_for_grpc(

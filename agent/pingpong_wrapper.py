@@ -40,6 +40,8 @@ class PingPongWrapper(gym.Wrapper):
         self.action_joints = []
         self.constrained_joints = []
 
+        self.info = None
+
         for i in range(self.model.neq):
             self.equalities.append([self.model.eq_obj1id[i], self.model.eq_obj2id[i], self.model.eq_data[i]])
             self.constrained_joints.append(self.model.eq_obj1id[i])
@@ -61,6 +63,9 @@ class PingPongWrapper(gym.Wrapper):
         self.action_low = self.model.jnt_range[:, 0][self.action_joints]
         self.action_high = self.model.jnt_range[:, 1][self.action_joints]
         self.action_to_qpos = self.model.jnt_qposadr[self.action_joints]
+        self.observation_space = gym.spaces.Box(
+            low=-np.inf, high=np.inf, shape=(self.env.observation_space.shape[0] - 6 + 11,)
+        )
 
     def _target_length_to_activation(self, target_lengths):
         """
@@ -131,11 +136,15 @@ class PingPongWrapper(gym.Wrapper):
         super().reset(**kwargs)
 
         obs, info = self.rc.reset()
+        ball_pos = obs[-6:-3].copy()
+        ball_vel = obs[-3:].copy()
+        obs = obs[:-6]
+
         self.paddle_face_dir_local = np.array([0, 0, -1])
 
         # TODO： 进行修改command从obs中进行计算
-        self.get_obs_dict()
-        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(self.rc_obs_dict["ball_pos"].copy(), self.rc_obs_dict["ball_vel"].copy())
+
+        p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(ball_pos, ball_vel)
         self.hit_pos_paddle = p_paddle
         self.v_paddle = v_paddle
         self.o_paddle = o_paddle
@@ -194,9 +203,9 @@ class PingPongWrapper(gym.Wrapper):
         else:
             input_actions = activations
 
-        if self.rc_obs_dict['touching_info'][0] == 1:
+        if self.info is not None and self.info["obs_dict"]['touching_info'][0] == 1:
             self.contact_paddle = True
-        if self.rc_obs_dict['touching_info'][0] == 0 and self.contact_paddle == True:
+        if self.info is not None and self.info["obs_dict"]['touching_info'][0] == 0 and self.contact_paddle == True:
             input_actions = np.ones_like(input_actions) * -1
             
         env_actions = np.concatenate([input_actions, action[:2]])
@@ -206,12 +215,16 @@ class PingPongWrapper(gym.Wrapper):
         obs = ret["feedback"][0]
         reward = ret["feedback"][1]
         flag_trial = ret["feedback"][2]
+        info = ret["feedback"][3]
         flat_completed = ret["eval_completed"]
 
-        obs = np.concatenate([obs, self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
+        self.info = info
+
+        obs = np.concatenate([obs[:-6], self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
         
-        self.get_obs_dict()
-        return obs, reward, flag_trial, flat_completed
+        # 这里为什么要获得一次obsdict呢？
+        # self.get_obs_dict()
+        return obs, reward, flag_trial, flat_completed, info
 
 
 def close(a, b):

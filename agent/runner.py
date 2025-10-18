@@ -111,6 +111,7 @@ def main():
 
     flat_completed = None
     trial = 0
+    success_count = 0
 
     if view:
         import mujoco.viewer
@@ -137,17 +138,23 @@ def main():
             obs = vec_norm.normalize_obs(obs[None, :])
             action, _states = model.predict(obs, deterministic=True)
             
-            obs, reward, flag_trial, flat_completed = env.step(action[0])
+            obs, reward, flag_trial, flat_completed, info = env.step(action[0])
             rewards += reward
 
             if view and viewer.is_running():
                 viewer.sync()
                 time.sleep(0.05)
 
+            if info["solved"]:
+                success_count += 1
+                print(f"Success count: {success_count}")
+
             counter += 1
         
         print(f"Trail: {trial}, rewards: {rewards}")
+        
         trial += 1
+    print(f"Success rate: {success_count / trial}")
 
     if view and viewer.is_running():
         viewer.close()
