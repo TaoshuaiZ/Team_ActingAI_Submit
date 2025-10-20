@@ -93,14 +93,14 @@ class Environment(evaluation_pb2_grpc.EnvironmentServicer):
             env.next_score()
             env.feedback = env.env.step(action)
             
-        feedback = [env.feedback[0],env.feedback[1],False,env.feedback[4]]
+        feedback = [env.feedback[0],env.feedback[1],False,None,env.feedback[4]]
         # if self.iter == 10:
         #     feedback = [env.feedback[0],env.feedback[1],True]
         #     if self.repetition == 5:
         #         EVALUATION_COMPLETED = True
 
         if env.feedback[2] or env.feedback[3]:
-            feedback = [env.feedback[0],env.feedback[1],True,env.feedback[4]]
+            feedback = [env.feedback[0],env.feedback[1],True,None,env.feedback[4]]
             if self.repetition == 100:
                 EVALUATION_COMPLETED = True
 

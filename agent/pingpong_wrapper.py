@@ -140,6 +140,10 @@ class PingPongWrapper(gym.Wrapper):
         ball_vel = obs[-3:].copy()
         obs = obs[:-6]
 
+        self.data.qpos[:58] = obs[4:62].copy()
+        self.data.qvel[:58] = obs[62:120].copy()
+        mujoco.mj_forward(self.model.ptr, self.data.ptr)
+
         self.paddle_face_dir_local = np.array([0, 0, -1])
 
         # TODO： 进行修改command从obs中进行计算
@@ -210,7 +214,7 @@ class PingPongWrapper(gym.Wrapper):
             
         env_actions = np.concatenate([input_actions, action[:2]])
         # print(env_actions - np.load("/home/zwt/Projects/myo/muscle_act.npy"))
-        _obs, _, _terminated, _truncated, _info = super().step(env_actions)
+        # _obs, _, _terminated, _truncated, _info = super().step(env_actions)
         ret = self.rc.act_on_environment(env_actions)
         obs = ret["feedback"][0]
         reward = ret["feedback"][1]
@@ -219,6 +223,11 @@ class PingPongWrapper(gym.Wrapper):
         flat_completed = ret["eval_completed"]
 
         self.info = info
+
+        # 更新env的qpos和qvel
+        self.data.qpos[:58] = obs[4:62].copy()
+        self.data.qvel[:58] = obs[62:120].copy()
+        mujoco.mj_forward(self.model.ptr, self.data.ptr)
 
         obs = np.concatenate([obs[:-6], self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
         
