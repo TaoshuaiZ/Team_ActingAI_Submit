@@ -10,7 +10,7 @@
   <p align="center"><i>MyoChallenge Tasks</i></p>
 </p>
 
-Welcome to the [**2025 NeurIPS - MyoChallenge: Towards Human Athletic Intelligence**](https://sites.google.com/view/myosuite/myochallenge/myochallenge-2025).
+This repository contains the ActingAI team's submission to the Table Tennis track of the [**2025 NeurIPS - MyoChallenge: Towards Human Athletic Intelligence**](https://sites.google.com/view/myosuite/myochallenge/myochallenge-2025).
 
 This challenge consists of developing controllers for a physiologically realistic musculoskeletal model to achieve upper and lower limb athletic tasks:
 
