@@ -82,7 +82,6 @@ def get_custom_observation(rc, obs_keys):
 
 
 def main():
-    # TODO: 进行修改 Model and agent
 
     args = json.load(open("checkpoints/tabletennis_fk_ppo_p2.json"))
     args = argparse.Namespace(**args)
