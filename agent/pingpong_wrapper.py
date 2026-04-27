@@ -146,8 +146,6 @@ class PingPongWrapper(gym.Wrapper):
 
         self.paddle_face_dir_local = np.array([0, 0, -1])
 
-        # TODO： 进行修改command从obs中进行计算
-
         p_paddle, v_paddle, o_paddle, t_hit = self.get_high_command(ball_pos, ball_vel)
         self.hit_pos_paddle = p_paddle
         self.v_paddle = v_paddle
@@ -179,7 +177,7 @@ class PingPongWrapper(gym.Wrapper):
         # get v_paddle
         v_paddle = compute_racket_vel(v_i, v_o)
 
-        # get paddle orientation TODO: 拍子朝向可能与拍子速度方向不一致
+        # get paddle orientation 
         o_paddle = vec_to_quat(self.paddle_face_dir_local, v_paddle / np.linalg.norm(v_paddle))
 
         # get p_pad
@@ -219,19 +217,17 @@ class PingPongWrapper(gym.Wrapper):
         obs = ret["feedback"][0]
         reward = ret["feedback"][1]
         flag_trial = ret["feedback"][2]
-        info = ret["feedback"][4] # TODO：在线测试环境中info索引到底是几？
+        info = ret["feedback"][4] 
         flat_completed = ret["eval_completed"]
 
         self.info = info
 
-        # 更新env的qpos和qvel
         self.data.qpos[:58] = obs[4:62].copy()
         self.data.qvel[:58] = obs[62:120].copy()
         mujoco.mj_forward(self.model.ptr, self.data.ptr)
 
         obs = np.concatenate([obs[:-6], self.hit_pos_paddle, self.v_paddle, self.o_paddle, np.array([self.hit_time])])
         
-        # 这里为什么要获得一次obsdict呢？
         # self.get_obs_dict()
         return obs, reward, flag_trial, flat_completed, info
 
